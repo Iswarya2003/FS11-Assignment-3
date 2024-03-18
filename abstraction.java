@@ -1,53 +1,39 @@
-public abstract class AbstractClass { 
-    int a; 
-    final int b = 20; 
-    static int c = 30; 
-    abstract void m1();
-    static void m2(){
-       System.out.println("Static method in abstract class");
-     }
-    void m3() { 
-       System.out.println("Instance method in abstract class");
-    }
-
-    AbstractClass(){
-       int a = 10;
-       System.out.println("Value of a; "+a);
-    }
-
-    static {
-       System.out.println("Static block in abstract class");
-    }
- {
- System.out.println("Instance block in abstract class");
- }
-
- private void m4()
- {
- System.out.println("Private method");
- }
- protected void m5()
- {
- System.out.println("Protected method");
- }
+//Synchronization
+class Counter {
+   private int count = 0;
+   public synchronized void increment() {
+       count++;
+   }
+   public int getCount() {
+       return count;
+   }
 }
-public class A extends AbstractClass
-{
- void m1()
- {
- System.out.println("Implementation of abstract method");
- }
+
+class IncrementerThread extends Thread {
+   private Counter counter;
+   private int times;
+
+   public IncrementerThread(Counter counter, int times) {
+       this.counter = counter;
+       this.times = times;
+   }
+
+   public void run() {
+       for (int i = 0; i < times; i++) {
+           counter.increment();
+       }
+   }
 }
-public class AbstractTest
-{
- public static void main(String[] args)
- {
- A a = new A();
- System.out.println("Value of b: " +a.b);
- System.out.println("Value of c: " +AbstractClass.c);
- a.m1();
- AbstractClass.m2();
- a.m3();
- a.m5();
- }
+
+public class Main{
+   public static void main(String[] args) throws InterruptedException {
+       Counter counter = new Counter();
+       IncrementerThread thread1 = new IncrementerThread(counter, 1000);
+       IncrementerThread thread2 = new IncrementerThread(counter, 1000);
+       thread1.start();
+       thread2.start();
+       thread1.join();
+       thread2.join();
+       System.out.println("Final count: " + counter.getCount());
+   }
 }
